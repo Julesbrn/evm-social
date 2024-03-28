@@ -80,7 +80,7 @@ There are two notable parts of the url. CONTRACTADDRESS and PAGE.
 This is the contract address of the backend smart contract. If you are using my contract, this can be excluded as the default should work. If you are using a custom contract address, fill that here. It should be in the format of 0x1234567890abcdef1234567890abcdef12345678
 
 ## PAGE
-This is the "page" that your are viewing. There are two scenarios
+This is the "page" that you are viewing. There are two scenarios
 
 ### You are viewing a user's profile
 Only the user may post to their own profile. 
@@ -94,10 +94,30 @@ The default page is "home".
 # Live Deployments
 Below is a list of blockchains and their corresponding contract addresses.
 ## Contract Addreses
-Mumbai (TESTNET) => 0x6ef1c0dd6db23521442a6fc68f161b82ae89baa9
+
+| Blockchain        | Type    | Address
+| :----------       | :-----: | -----
+| Mumbai            | Testnet | 0x6ef1c0dd6db23521442a6fc68f161b82ae89baa9
+
+
+
 ## IPFS Links
+| Version | CID
+| :-----  | ----
+| 0.9.0 | QmTxAmmKNevA5zN5P6ffwpFbW1iw8Drw2Ghr7QcvRBg2QU
+
+### Recommended Pages
+| Page | Description
+| --- | ---
+| home | This is the default page.
+|0xD174e332fA54261501a755B95fbF48E244674f28 | The creator's profile.
+
+```url
 ipfs://QmTxAmmKNevA5zN5P6ffwpFbW1iw8Drw2Ghr7QcvRBg2QU/#tag=home
+```
+```url
 ipfs://QmTxAmmKNevA5zN5P6ffwpFbW1iw8Drw2Ghr7QcvRBg2QU/#tag=0xD174e332fA54261501a755B95fbF48E244674f28
+```
 
 
 # How It Works - Technical Details
