@@ -5,7 +5,7 @@ EVM-Social is a simple proof-of-concept social media platform built to use an ar
 I believe freedom of speech and privacy are fundamental human rights. If done right, this accomplishes both.
 
 # Preview
-![Preview Image](gh_imgs\example.png)
+![Preview Image](gh_imgs/example.png)
 ## Explanation
 Let's explain the layout starting from the top.
 Here we are looking at an example profile page.
