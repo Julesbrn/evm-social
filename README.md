@@ -105,6 +105,7 @@ Below is a list of blockchains and their corresponding contract addresses.
 | Version | CID
 | :-----  | ----
 | 0.9.0 | QmTxAmmKNevA5zN5P6ffwpFbW1iw8Drw2Ghr7QcvRBg2QU
+| 0.9.0 | bafybeictmpawap324el3vptu4iia62ymcan5dmz45ciitqyno2fkkivz5u
 
 ### Recommended Pages
 | Page | Description
@@ -113,10 +114,15 @@ Below is a list of blockchains and their corresponding contract addresses.
 |0xD174e332fA54261501a755B95fbF48E244674f28 | The creator's profile.
 
 ```url
-ipfs://QmTxAmmKNevA5zN5P6ffwpFbW1iw8Drw2Ghr7QcvRBg2QU/#tag=home
+ipfs://bafybeictmpawap324el3vptu4iia62ymcan5dmz45ciitqyno2fkkivz5u/#tag=home
 ```
 ```url
-ipfs://QmTxAmmKNevA5zN5P6ffwpFbW1iw8Drw2Ghr7QcvRBg2QU/#tag=0xD174e332fA54261501a755B95fbF48E244674f28
+ipfs://bafybeictmpawap324el3vptu4iia62ymcan5dmz45ciitqyno2fkkivz5u/#tag=0xD174e332fA54261501a755B95fbF48E244674f28
+```
+
+Example
+```url
+https://bafybeictmpawap324el3vptu4iia62ymcan5dmz45ciitqyno2fkkivz5u.ipfs.dweb.link/#tag=0xD174e332fA54261501a755B95fbF48E244674f28
 ```
 
 
