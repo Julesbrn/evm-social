@@ -1,0 +1,473 @@
+<div id="topRight">
+  <a (click)="open(content)">Your profile</a>
+  <a (click)="open(DoPost)">Submit a post</a>
+  <a (click)="open(TermsOfService, true, 'TOS-modal')">TermsOfService</a>
+</div>
+
+<ng-template #test_modal let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-basic-title">TEST MODAL</h4>
+    <button type="button" class="btn-close" style="filter: invert(100%);" aria-label="Close"
+      (click)="modal.dismiss('Cross click')"></button>
+  </div>
+  <div class="modal-body">
+    <h1>Hello, i am a modal.</h1>
+  </div>
+  <div class="modal-footer">
+  </div>
+</ng-template>
+
+<ng-template #content let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-basic-title">Profile update</h4>
+    <button type="button" class="btn-close" style="filter: invert(100%);" aria-label="Close"
+      (click)="modal.dismiss('Cross click')"></button>
+  </div>
+  <div class="modal-body">
+    <form #itemForm="ngForm" (ngSubmit)="SubmitMetadata(itemForm)" autocomplete="off">
+      <div class="mb-3">
+        <div class="input-group">
+          <ul class="info-list">
+            <li class="info-list">
+              <label for="username">Display Name</label>
+              <br />
+              <input id="username" type="text" class="darkmode-formbox" name="username" [(ngModel)]="defaultValues.name"
+                [value]="profile_form_variables.displayName">
+            </li>
+
+            <li>
+              <label for="description">Description</label>
+            </li>
+            <li>
+              <textarea class="darkmode-formbox" rows="5" id="description" name="description"
+                [(ngModel)]="defaultValues.description" [value]="profile_form_variables.description"></textarea>
+            </li>
+
+            <li class="info-list">
+              <label for="profileImg">Profile Image</label>
+              <input id="profileImg" type="file" (change)="handleInputChange($event, 'profile')" class="inputfile">
+            </li>
+            <img *ngIf="defaultValues.profileImg && defaultValues.profileImg !== exampleImage"
+              style="max-width: 100px;max-height: 100px;" [src]="defaultValues.profileImg" alt="Banner Image"
+              class="home-image1" />
+            <p *ngIf="!defaultValues.profileImg || defaultValues.profileImg === exampleImage">Profile Image Not Set.</p>
+
+            <li class="info-list">
+              <label for="bannerImg">Banner Image</label>
+              <input id="bannerImg" type="file" (change)="handleInputChange($event, 'banner')" class="inputfile">
+            </li>
+            <img *ngIf="defaultValues.bannerImg && defaultValues.bannerImg !== exampleImage"
+              style="max-width: 100px;max-height: 100px;" [src]="defaultValues.bannerImg" alt="Banner Image"
+              class="home-image1" />
+            <p *ngIf="!defaultValues.bannerImg || defaultValues.bannerImg === exampleImage">Banner Image Not Set.</p>
+
+            <hr>
+            <small>
+              Note:
+              All data is stored on the blockchain and <u>cannot be deleted</u>.
+              Storage on the blockchain is expensive.
+              The smaller the file is the cheaper it will be to upload.
+              Profile pictures are displayed as 200x200 pixels.
+              However, 100x100 pixels is recommended.
+              Banners are displayed as full width and ~180px high.
+              Recommended 600x100 pixels. Actual sizes depend on screen size.
+            </small>
+
+
+          </ul>
+
+        </div>
+      </div>
+      <button type="submit" class="btn btn-outline-dark" style="color: white;background-color: black;">Submit</button>
+      <button type="button" class="btn btn-outline-dark" (click)="clear_formboxes()"
+        style="color: white;background-color: black;">Clear</button>
+    </form>
+  </div>
+  <div class="modal-footer">
+  </div>
+</ng-template>
+
+
+<!-- DoPost Modal-->
+<ng-template #DoPost let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-basic-title">Profile update</h4>
+    <button type="button" class="btn-close" style="filter: invert(100%);" aria-label="Close"
+      (click)="modal.dismiss('Cross click')"></button>
+  </div>
+  <!-- <button type="button" class="btn btn-outline-dark" (click)="posting_disabled = !posting_disabled" style="color: white;background-color: black;">Toggle disabled</button> -->
+  <div class="modal-body">
+    <h2 *ngIf="tag.toLowerCase() != accounts[0].toLowerCase() && tag.substring(0,2) === '0x'"
+      style="color:red;background-color:white">Warning: You cannot post to someone else's page. This will fail as you
+      are not the owner. This is restricted in the smart contract.</h2>
+    <form #itemForm="ngForm" (ngSubmit)="DoPost_btn(itemForm)" autocomplete="off" class="form-container"
+      [attr.disabled]="posting_disabled">
+      <div class="mb-3">
+        <div class="input-group">
+          <ul class="info-list">
+            <h1>Posting to {{tag}}</h1>
+            <li>
+              <label for="description">Description</label>
+            </li>
+            <li>
+              <textarea [disabled]="posting_disabled" class="darkmode-formbox" rows="5" id="description"
+                name="description" [(ngModel)]="TmpPost.msg" [value]="TmpPost.msg"></textarea>
+            </li>
+
+            <li class="info-list">
+              <label for="profileImg">Add Image</label>
+              <input id="profileImg" type="file" (change)="AddImageToPost($event)" class="inputfile">
+            </li>
+            <small>
+              Click on the below image to embed it into your post.
+              Images in the text will be represented with &lt;Image-#&gt;.
+              Those will be replace with images after you click submit. See preview below.
+              Note: The image will <u>NOT</u> be included if the corresponding &lt;Image-#&gt; is not present in the
+              text.
+            </small>
+            <hr>
+            <div *ngFor="let img of TmpPost.imgs; let i = index">
+              <hr *ngIf="i !== 0">
+              <p>&lt;Image-{{i}}&gt;</p>
+              <img style="max-height: 250px;max-width: 75%;" [src]="img" (click)="addImageTextToPost(i)">
+            </div>
+            <hr>
+
+            <hr>
+            <small>
+              Note:
+              All data is stored on the blockchain and <u>cannot be deleted or modified</u>.
+              Storage on the blockchain is expensive.
+              The smaller the file is the cheaper it will be to upload.
+              Recommended images sizes are ~500x500.
+              It's also advised to use services that compress images beyond standard.
+              10KB is the suggested file size. This is not automatically compressed for you. Google search "tinyjpg",
+              the results should assist you in compressing your image.
+              <br />
+              Note: The only accepted image type is jpg.
+              <br />
+              Note: There is a hard limit of 25 images in a post.
+              <br />
+              <u>Warning</u>: Images over 2MB (experimentally determined) may break metamask, making it completely
+              unusable and inaccessible. Please ensure images are as compressed as possible.
+              <br />
+              <u>Ensure you have your private key backed up. If metamask breaks, you will lose access to your wallet and
+                your money.</u>
+            </small>
+
+
+          </ul>
+
+        </div>
+
+        <div *ngIf="TmpPost.preview.length > 0">
+          <hr>
+          <h1>PREVIEW</h1>
+          <p *ngIf="bPreviewMissingImage">Waring: Some images are unused.</p>
+          <div *ngFor="let t of TmpPost.preview">
+            <p *ngIf="t.type == 'TEXT'">{{t.data}}</p>
+            <img *ngIf="t.type == 'IMAGE'" style="max-height: 250px;max-width: 75%;" [src]="t.data">
+          </div>
+          <p>
+            Estimated Cost: {{TmpPost.coinCost}}
+            <br />
+            Formula: estimated gas x gas price / 1,000,000,000
+            <br />
+            Formula: {{TmpPost.gasEst}} x {{gasPrice}} / 1,000,000,000 = {{TmpPost.gasEst*gasPrice/1000000000}}
+          </p>
+        </div>
+
+
+      </div>
+      <button [disabled]="posting_disabled" type="button" class="btn btn-outline-dark" (click)="generatePreview()"
+        style="color: white;background-color: black;">Generate Preview</button>
+      <button [disabled]="posting_disabled" type="submit" class="btn btn-outline-dark"
+        style="color: white;background-color: black;">Submit</button>
+      <button [disabled]="posting_disabled" type="button" class="btn btn-outline-dark" (click)="clearTmpPost()"
+        style="color: white;background-color: black;">Clear</button>
+    </form>
+    <div class="overlay" [class.overlay_hidden]="posting_disabled" [class.overlay_hidden]="!posting_disabled">Loading...
+    </div>
+  </div>
+  <div class="modal-footer">
+  </div>
+</ng-template>
+
+
+
+
+<div class="home-container">
+  <div class="home-container1">
+    <div class="image-crop">
+      <img *ngIf="profileData && profileData.bannerImage" [src]="profileData.bannerImage" alt="Profile Image"
+        [defaultImage]="exampleImage">
+      <img *ngIf="!profileData || !profileData.bannerImage" [src]="exampleImage" alt="Default Profile Image">
+    </div>
+
+  </div>
+  <div class="home-container2">
+
+    <img *ngIf="profileData && profileData.bannerImage" [src]="profileData.profileImage" alt="Banner Image"
+      class="home-image1" [defaultImage]="exampleImage" />
+    <img *ngIf="!profileData || !profileData.bannerImage" [src]="exampleImage" alt="Default Banner Image"
+      class="home-image1" />
+
+    <div class="home-container3">
+      <div class="home-container4">
+        <h1 *ngIf="profileData && profileData.DisplayName" class="home-text">{{profileData.DisplayName}}</h1>
+        <h1 *ngIf="!profileData || !profileData.DisplayName" class="home-text">Name Not Set</h1>
+        <img [src]="stringToImg(tag)">
+        <p class="tag-id">
+          {{tag}}
+        </p>
+      </div>
+    </div>
+    <div class="home-container5">
+      <span class="home-text2" *ngIf="profileData && profileData.Description">
+        {{profileData.Description}}
+      </span>
+      <span class="home-text2" *ngIf="!profileData || !profileData.Description">
+        No Description Available.
+      </span>
+
+
+    </div>
+  </div>
+
+  <div class="home-container8" *ngIf="posts.length == 0" style="border-radius: 50px;">
+    <span class="home-text4">
+      <div>
+        <p>No Posts</p>
+      </div>
+    </span>
+  </div>
+  <div class="home-container6" *ngFor="let post of posts">
+    <div tooltip="{{post.date}}" placement="bottom" class="home-container7">
+      <h1>
+        #{{post.id+1}}
+      </h1>
+    </div>
+    <img tooltip="{{post.poster}}" [src]="stringToImg(post.poster)">
+    <div class="home-container8">
+      <span class="home-text4">
+        <div *ngFor="let t of post.postData">
+          <p *ngIf="t.type == 'TEXT'">{{t.data}}</p>
+          <img *ngIf="t.type == 'IMAGE'" style="max-height: 250px;max-width: 75%;" [src]="t.data">
+        </div>
+      </span>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- TermsOfService Modal-->
+<ng-template #TermsOfService let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-basic-title">Terms of Service</h4>
+    <button type="button" class="btn-close" style="filter: invert(100%);" aria-label="Close"
+      (click)="TOS_Declined()"></button>
+  </div>
+  <!-- <button type="button" class="btn btn-outline-dark" (click)="posting_disabled = !posting_disabled" style="color: white;background-color: black;">Toggle disabled</button> -->
+  <div class="modal-body">
+
+    <h1>Nonlegally binding TLDR</h1>
+    <ul>
+      <li>Voltaire's Forum does not make any attempt to track it's users. However, due to the blockchain's traceable
+        nature, all user activity is public information.</li>
+      <li>You agree that everything you post is your responsibility.</li>
+      <li>You also agree not to use Voltaire's Forum in an unlawful manner.</li>
+      <li>Don't be a dick.</li>
+      <li>Please review the section titled "Privacy Disclaimer".</li>
+    </ul>
+
+    <h1>
+      Introduction
+    </h1>
+    <p>
+      These Terms of Service (ToS) govern your use of Voltaire's Forum, a decentralized social media platform built upon
+      advanced blockchain technology. The platform is designed to enable uninhibited communication and preserve freedom
+      of speech while maintaining privacy considerations essential to protecting individual rights. Posted content
+      remains perpetually available, reflecting our dedication to transparency and accountability. Users must comply
+      with all provisions set forth in this agreement during their interaction with Voltaire's Forum. Failure to abide
+      by these conditions could result in consequences as specified elsewhere within this document. It is crucial to
+      understand and accept these terms fully before proceeding to access or participate in activities related to
+      Voltaire's Forum.
+    </p>
+    <h1>
+      Who May Use the Services
+    </h1>
+    <p>
+      Access to Voltaire's Forum is granted subject to meeting specific eligibility criteria. All users must be above a
+      minimum age requirement determined by applicable jurisdictional regulations. Compliance with relevant local laws
+      is mandatory for participation in any capacity within the platform. Furthermore, certain activities are strictly
+      forbidden, including but not limited to spamming, phishing attempts, and other forms of disruptive behavior
+      detrimental to the overall user experience. Violating these stipulations may lead to suspension or termination of
+      one's ability to interact with Voltaire's Forum.
+    </p>
+    <h1>
+      Acceptance of Terms
+    </h1>
+    <p>
+      By accessing Voltaire's Forum, you explicitly agree to be bound by the provisions contained herein. Your continued
+      presence on the platform signifies your acceptance of these Terms of Service. If you do not wish to comply with
+      these terms, please refrain from using Voltaire's Forum immediately. Any subsequent modifications made to this
+      agreement shall become effective upon publication; however, your continued utilization of the services implies
+      tacit approval of said changes.
+    </p>
+    <h1>
+      Content on the Services
+    </h1>
+    <p>
+      Voltaire's Forum supports various formats of content, including text, images, videos, and others. However, given
+      its foundation based on immutable smart contracts, it is important to note that once content has been shared
+      through the platform, it becomes an indelible part of the record. As such, no alterations can be made
+      retrospectively – neither by users nor administrators. This characteristic underscores the significance of
+      exercising caution when deciding what information to share publicly via Voltaire's Forum.
+    </p>
+    <h1>
+      Your Rights and Grant of Rights in the Content
+    </h1>
+    <p>
+      As a user of Voltaire's Forum, you maintain complete ownership over the content you create and publish. By doing
+      so, you implicitly grant us non-exclusive rights to host and distribute your material across our decentralized
+      network. This arrangement enables proper functioning of the platform without compromising your proprietary
+      interests. Importantly, both Voltaire's Forum and its creator hold no liability regarding any legal consequences
+      resulting from users' content sharing activities. Respecting intellectual property rights is required when
+      interacting with Voltaire's Forum. Copyright protection applies to original works authored by users, while
+      trademarks and patents pertain where relevant.
+    </p>
+    <h1>
+      User Conduct
+    </h1>
+    <p>
+      At Voltaire's Forum, we expect all participants to uphold high standards of ethical conduct during interactions.
+      Engage respectfully with fellow users, fostering an environment conducive to open dialogue and mutual
+      understanding. We advocate for free speech but also recognize the need to protect against abusive behaviors
+      detrimental to the overall experience. If technically viable, we may implement mechanisms allowing users to report
+      potentially harmful or illegal content posted on the platform. Such reports will be reviewed diligently according
+      to established guidelines designed to preserve fairness and impartiality throughout the process.
+    </p>
+    <h1>
+      Preventing Misuse and Illegal Use
+    </h1>
+    <p>
+      Voltaire's Forum strongly condemns misuses of its services for unlawful purposes. We actively promote responsible
+      usage patterns among our community members, urging them to exercise caution and restraint when engaging with
+      others through the platform. Self-regulation plays a vital role in preserving the integrity of discussions taking
+      place here. Should circumstances warrant involvement from law enforcement agencies, we pledge full cooperation in
+      assisting their investigative efforts related to criminal activities carried out using Voltaire's Forum. Our
+      commitment lies in supporting legitimate expression while combating actions that undermine societal norms and
+      legal frameworks governing online communication platforms like our own.
+    </p>
+    <h1>
+      Your Account
+    </h1>
+    <p>
+      In contrast to conventional social media platforms, Voltaire's Forum leverages blockchain technology for account
+      creation and management. Each user possesses an account tied to their respective wallet address, eliminating the
+      need for separate signup processes. Once engaged with the platform using their wallets, individuals may opt to
+      enhance their presence by customizing their profile pictures, display names, banner images, descriptions, etc.
+      These additional steps allow users to express themselves uniquely while still retaining the core benefits offered
+      by decentralized authentication methods based on blockchain principles. Therefore, when changing any account
+      details,
+      previous iterations remain accessible within the blockchain records. This allows others equipped with appropriate
+      tools to trace historical profile information associated with each account. Therefore, the need for thoughtful
+      decision-making prior to altering one's chosen identifier is required.
+    </p>
+    <h1>
+      Your License to Use the Services
+    </h1>
+    <p>
+      Subject to compliance with these Terms of Service, you are granted a non-exclusive, revocable license to access
+      and interact with Voltaire's Forum. Any attempt to circumvent established guidelines or engage in activities
+      deemed detrimental to the overall experience may result in immediate suspension or termination of your ability to
+      continue accessing our services. Please note that this license does not extend beyond its intended scope as
+      defined herein; any actions taken outside these boundaries shall constitute violations subject to penalties
+      stipulated elsewhere within this agreement.
+    </p>
+    <h1>
+      Misuse of the Services
+    </h1>
+    <p>
+      Any misuse of Voltaire's Forum constitutes a direct breach of these Terms of Service. Prohibited behaviors include
+      but are not limited to exploiting discovered vulnerabilities, attempting unauthorized system intrusions (hacking),
+      or engaging in any activity designed to disrupt normal operations. Individuals found guilty of committing such
+      acts will be subjected to sanctions as detailed elsewhere within this document. It remains crucial to understand
+      that malicious intent targeting Voltaire's Forum will not be tolerated and will promptly face repercussions
+      accordingly.
+    </p>
+    <h1>
+      Disclaimers and Limitations of Liability
+    </h1>
+    <p>
+      Voltaire's Forum operates on an "as-is" basis, meaning no explicit or implicit guarantees regarding quality,
+      performance, suitability for specific purposes, or freedom from errors are provided. Users must recognize that
+      they bear responsibility for evaluating whether the services meet their requirements adequately. Furthermore, both
+      Voltaire's Forum and its creator disclaim all liability related to damages arising directly or indirectly from
+      using the platform – including but not limited to data loss, financial losses, business interruption, or
+      consequential damages of any kind.
+    </p>
+    <h1>
+      Arbitration Clause
+    </h1>
+    <p>
+      In the event of any dispute arising out of or relating to the use of Voltaire's Forum, both parties agree to
+      resolve said disagreement through binding arbitration administered by the American Arbitration Association in
+      accordance with its Commercial Arbitration Rules. The arbitration shall be held in the county and state where the
+      creator of Voltaire's Forum is located, and judgment on the award rendered by the arbitrator(s) may be entered
+      into any court having jurisdiction thereof. Notably, the selection process for determining the arbitrator will
+      commence once a dispute emerges, allowing for a tailored approach based on specific circumstances encountered.
+    </p>
+    <h1>
+      Privacy Disclaimer
+    </h1>
+    At Voltaire's Forum, safeguarding user privacy stands among our top priorities. We acknowledge the inherent
+    challenges posed by operating within a decentralized environment powered by immutable smart contracts.
+    Nevertheless, we remain committed to implementing robust security measures aimed at securing individual data
+    wherever possible. Our dedication extends towards ensuring maximum transparency around how user information is
+    handled and protected throughout interactions occurring via Voltaire's Forum.<br /><br />
+    <h3>
+      Interaction with Blockchains
+    </h3>
+
+    When accessing Voltaire's Forum, users may rely on third-party blockchain servers which may monitor transactions and
+    potentially gather sensitive information about individuals. It remains crucial to recognize this aspect and exercise
+    due diligence when evaluating provider choices based on their respective privacy policies.<br /><br />
+    <h3>
+      IPFS Hosting
+    </h3>
+    To leverage the full capabilities offered by Voltaire's Forum, interaction with IPFS nodes becomes necessary. These
+    nodes might possess varying levels of data collection and tracking mechanisms. Therefore, we advise carefully
+    considering available options and opting for reputable sources where applicable.<br /><br />
+    <h3>
+      Cryptocurrency Purchases & Linkage Between Wallets and Profiles
+    </h3>
+    Acquiring cryptocurrencies often entails revealing personal details, thereby establishing links between digital
+    assets and actual identities. Similarly, transactions conducted using a given wallet can sometimes be tied to
+    related profiles created within platforms like Voltaire's Forum. Awareness of these connections allows users to
+    better understand how their actions might impact overall privacy protection measures. <br /><br />
+
+    <h1>
+      Responsibility Clause
+    </h1>
+    <p>
+      As members of the Voltaire's Forum community, we all share responsibility in fostering an environment conducive to
+      open dialogue and mutual respect. Engaging responsibly means treating fellow participants with decency, refraining
+      from engaging in harmful or disruptive behaviors, and adhering to established guidelines designed to preserve
+      decorum across discussions. By embracing these principles collectively, we contribute toward building a vibrant
+      space centered around intellectual curiosity, free expression, and genuine understanding – values fundamental to
+      Voltaire's Forum's mission.
+    </p>
+
+
+
+
+    <button type="button" class="btn btn-outline-dark" (click)="TOS_Accepted()"
+      style="color: white;background-color: black;">Accept</button>
+    <button type="button" class="btn btn-outline-dark" (click)="TOS_Declined()"
+      style="color: white;background-color: black;">Decline</button>
+  </div>
+  <div class="modal-footer">
+  </div>
+</ng-template>

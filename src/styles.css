@@ -1,0 +1,38 @@
+/* You can add global styles to this file, and also import other style files */
+html
+{
+  background-color: black;
+  color: white;
+}
+
+.tooltip
+{
+  padding:2px;
+  position: -2px;
+  background-color:darkslategrey;
+}
+
+.modal-content
+{
+  background-color: #262626 !important;
+  color:white !important;
+  overflow-wrap: anywhere;
+}
+
+.default-image {
+  background: url('/assets/pixels2.jpg') repeat;
+  display: block;
+  width: 100%; /* adjust as needed */
+  height: 100%; /* adjust as needed */
+}
+
+.tag-id
+{
+  overflow-wrap: anywhere;
+  width: 118px;
+}
+
+.TOS-modal .modal-dialog
+{
+  max-width: 75%
+}
