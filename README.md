@@ -170,10 +170,15 @@ For reference, a 41KB image costs 1.4Mil (1.4x10^6) gas to post.
 
 ## Cost
 Here's the most practical limitation users will encounter. Each post will cost a certain amount of coins. Unfortunately, coin prices fluctuate over time. If a coin's price rises too high, it could make posting on that blockchain too expensive. For example, this project is not feasible on Ethereum mainnet. The same 1.4Mil gas post on Ethereum would cost 
+
 `$3,634 * 1.4x10^6 * 20 Gwei = ~$102`
+
 However, on Polygon, the numbers change by a few orders of magnitude. 
+
 `$1.1 * 1.4x10^6 * 38 Gwei = ~$0.059`
+
 The general formula is as follows
+
 `Coin price * gas used * gas price / 1,000,000,000 = Cost in USD (or used currency)`
 
 ## Trace Methods
@@ -188,7 +193,15 @@ This portion of the project is simply an Angular project. Install npm, install A
 # Support
 
 #### Funding
-If you’d like me to deploy this to a blockchain of your choice, send the deployment cost to 0xD174e332fA54261501a755B95fbF48E244674f28. It costs ~2mil gas to deploy. Please contact me before sending.
+If you’d like me to deploy this to a blockchain of your choice, send the deployment cost to 
+
+
+```txt
+0xD174e332fA54261501a755B95fbF48E244674f28
+```
+
+
+It costs ~2mil gas to deploy. Please contact me before sending.
 If you'd like to support me, feel free to use the same wallet address.
 
 #### IPFS pinning
