@@ -242,90 +242,87 @@ export class AppComponent implements OnInit
     
     this.profileData = this.emptyProfileData(); //Blank profile for transition.
 
-    await this.fetchUserProfile(this.accounts[0]); //Fetch the profile of the logged in user.
-    
-    var userProfile = this.profiles[this.accounts[0]] //Set the metadata for this user so they can edit their metadata.
-
-    this.profile_form_variables.description = userProfile?.Description;
-    if (!this.profile_form_variables.description) this.profile_form_variables.description = "Description Not Set"
-    this.defaultValues.description = this.profile_form_variables.description;
-
-    this.profile_form_variables.displayName = userProfile?.DisplayName;
-    if (!this.profile_form_variables.displayName) this.profile_form_variables.displayName = "Display Name Not Set"
-    this.defaultValues.name = this.profile_form_variables.displayName;
-
-
-    this.profile_form_variables.profileImg_b64 = userProfile?.profileImage;
-    if (!this.profile_form_variables.profileImg_b64) this.profile_form_variables.profileImg_b64 = exampleImage;
-    this.defaultValues.profileImg = this.profile_form_variables.profileImg_b64;
-
-
-    this.profile_form_variables.bannerImg_b64 = userProfile?.bannerImage;
-    if (!this.profile_form_variables.bannerImg_b64) this.profile_form_variables.bannerImg_b64 = exampleImage;
-    this.defaultValues.bannerImg = this.profile_form_variables.bannerImg_b64;
-
-    console.log(["this.profile_form_variables", this.profile_form_variables])
-
-
-    console.log([
-      "PROFILE CHECKS!",
-      "this.tag.substring(0,2).toLowerCase() === '0x'",
-      this.tag.substring(0,2).toLowerCase(), "0x",
-      "this.tag.toLowerCase() !== this.accounts[0].toLowerCase()",
-      this.tag.toLowerCase(), this.accounts[0].toLowerCase(),
-      "this.tag.substring(0,2).toLowerCase() === '0x'",
-      this.tag.substring(0,2).toLowerCase(), "0x"
-
-    ])
-
-    //If this IS a user profile
-    if (this.tag.substring(0,2).toLowerCase() === "0x")
-    {
-      //if this IS THIS user's profile
-      if (this.tag.toLowerCase() === this.accounts[0].toLowerCase())
+    //Fetch the profile of the logged in user.
+    this.fetchUserProfile(this.accounts[0]).then(
+      () =>
       {
-        this.profileData = this.profiles[this.accounts[0]]; //We already have this user's profile loaded.
+            var userProfile = this.profiles[this.accounts[0]] //Set the metadata for this user so they can edit their metadata.
+            
+            this.profile_form_variables.description = userProfile?.Description;
+            if (!this.profile_form_variables.description) this.profile_form_variables.description = "Description Not Set"
+            this.defaultValues.description = this.profile_form_variables.description;
+            
+            this.profile_form_variables.displayName = userProfile?.DisplayName;
+            if (!this.profile_form_variables.displayName) this.profile_form_variables.displayName = "Display Name Not Set"
+            this.defaultValues.name = this.profile_form_variables.displayName;
+            
+            
+            this.profile_form_variables.profileImg_b64 = userProfile?.profileImage;
+            if (!this.profile_form_variables.profileImg_b64) this.profile_form_variables.profileImg_b64 = exampleImage;
+            this.defaultValues.profileImg = this.profile_form_variables.profileImg_b64;
+            
+            
+            this.profile_form_variables.bannerImg_b64 = userProfile?.bannerImage;
+            if (!this.profile_form_variables.bannerImg_b64) this.profile_form_variables.bannerImg_b64 = exampleImage;
+            this.defaultValues.bannerImg = this.profile_form_variables.bannerImg_b64;
+            
+            console.log(["this.profile_form_variables", this.profile_form_variables])
+            
+            
+            //If this IS a user profile
+            if (this.tag.substring(0,2).toLowerCase() === "0x")
+            {
+              //if this IS THIS user's profile
+              if (this.tag.toLowerCase() === this.accounts[0].toLowerCase())
+              {
+                this.profileData = this.profiles[this.accounts[0]]; //We already have this user's profile loaded.
+              }
+          
+          //if this is NOT this user's profile
+          else
+          {
+            this.fetchUserProfile(this.tag.toLowerCase()).then(
+              () => 
+              {
+                this.profileData = this.profiles[this.tag.toLowerCase()]; //We fetch the profile of this user to display their data.
+                console.log(["==A Set to ", this.profileData])
+              }
+              )
+            }
+            
+          }
+          else //if this is NOT a user profile
+          {
+            console.log(["this.tag is NOT user profile.", this.tag])
+
+            var tmpProfile = this.emptyProfileData()
+            tmpProfile.DisplayName = this.tag;
+            tmpProfile.Description = `You are browsing \"${this.tag}\". This is not a user profile. Anyone may post here. If you are told this is a profile, you are being lied to.`
+            tmpProfile.bannerImage = exampleImage;
+            tmpProfile.profileImage = exampleImage;
+            this.profileData = tmpProfile;
+          }
+          console.log(["this.profiles", this.profiles, "this.ProfileData", this.profileData]);
       }
-
-      //if this is NOT this user's profile
-      else
-      {
-        await this.fetchUserProfile(this.tag.toLowerCase());
-        this.profileData = this.profiles[this.tag.toLowerCase()]; //We fetch the profile of this user to display their data.
-        console.log(["==A Set to ", this.profileData])
-      }
-
-    }
-    else //if this is NOT a user profile
-    {
-      console.log(["this.tag is NOT user profile.", this.tag])
-
-      var tmpProfile = this.emptyProfileData()
-      tmpProfile.DisplayName = this.tag;
-      tmpProfile.Description = `You are browsing \"${this.tag}\". This is not a user profile. Anyone may post here. If you are told this is a profile, you are being lied to.`
-      tmpProfile.bannerImage = exampleImage;
-      tmpProfile.profileImage = exampleImage;
-      this.profileData = tmpProfile;
-    }
-
-
-
-
-
-      console.log(["this.profiles", this.profiles, "this.ProfileData", this.profileData]);
-      // else
-      // {
-      //   this.profileData = this.profiles[this.accounts[0]];
-      //   console.log(["==B Set to ", this.profileData])
-      // }
+    )
     
-    this.gasPrice = await this.estGasPrice() / 1000000000 //Does this need to be an await?
+
+    
+    this.estGasPrice().then(val => 
+      {
+        this.gasPrice = val / 1000000000;
+      })
+      .catch(error => 
+      {
+        console.error(error);
+      }
+    );
 
     console.log(["this.gasPrice", this.gasPrice]);
 
 
 
-    await this.DoGetPosts(); //Does this need to be an await?
+    this.DoGetPosts();
 
     this.isLoaded = true;
   }
@@ -393,7 +390,7 @@ async DoGetPosts()
         }
         else
         {
-          console.log("Not related to our contract, skipping."); //TODO: improve this
+          console.log("Not related to our contract, skipping.");
           continue;
         }
         var tx = transactions[j]["hash"];
@@ -874,7 +871,7 @@ extendString(str: string)
     {
       var blockId = blockIds[i];
       if (blockId == 0) continue; //Blockid = 0, might happen during testing, but never in deployment. 0 mean empty.
-      var block = await this.web3js.eth.getBlock(blockId);
+      var block = await this.web3js.eth.getBlock(blockId, true);
       var timestamp = block.timestamp;
       var humanReadableTimestamp = new Date(Number(timestamp) * 1000);
       console.log(["block", block]);
@@ -882,20 +879,18 @@ extendString(str: string)
       if (transactions == null) continue;
       for (var j = 0; j < transactions.length; j++)
       {
-        var tx = transactions[j];
-        //Get transaction receipt
-        var tx2 = await this.web3js.eth.getTransactionReceipt(tx);
-        console.log(["tx2", tx2]);
-        if ("to" in tx2 && tx2["to"].toLowerCase() === this.contractAddress.toLowerCase())
+        var tx_tmp = transactions[j];
+        if ("to" in tx_tmp && tx_tmp["to"] !== null && tx_tmp["to"].toLowerCase() === this.contractAddress.toLowerCase())
         {
           //Do nothing, this is ours.
         }
         else
         {
-          console.log("Not related to our contract, skipping.");; //TODO: improve this
-  
+          console.log("Not related to our contract, skipping.");
           continue;
         }
+        var tx = transactions[j]["hash"];
+        var tx2 = await this.web3js.eth.getTransactionReceipt(tx);
 
         var type = this.fetch_abi_type("Metadata")
         if (type == -1) throw new Error('Error in abi!');
