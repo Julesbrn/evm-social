@@ -377,7 +377,7 @@ async DoGetPosts()
       var blockId = Number(ret[i]); //convert all bigints to numbers
 
       //var blockId = blockIds[i];
-      var block = await this.web3js.eth.getBlock(blockId); //Replace this with eth_getBlockByNumber. This will fetch all of the transactions at once, allowing us to filter out the transactions that do not apply to us.
+      var block = await this.web3js.eth.getBlock(blockId, true); //Replace this with eth_getBlockByNumber. This will fetch all of the transactions at once, allowing us to filter out the transactions that do not apply to us.
       //In theory, we could also extract the post data from the data field itself.
       //TODO: Remove the await here and make it run all at once?
       var timestamp = block.timestamp;
@@ -386,11 +386,8 @@ async DoGetPosts()
       var transactions = block.transactions;
       for (var j = 0; j < transactions.length; j++) 
       {
-        var tx = transactions[j];
-        //Get transaction receipt
-        var tx2 = await this.web3js.eth.getTransactionReceipt(tx); //TODO: Add error handling here
-        console.log(["tx2", tx2]);
-        if ("to" in tx2 && tx2["to"].toLowerCase() === this.contractAddress.toLowerCase())
+        var tx_tmp = transactions[j];
+        if ("to" in tx_tmp && tx_tmp["to"] !== null && tx_tmp["to"].toLowerCase() === this.contractAddress.toLowerCase())
         {
           //Do nothing, this is ours.
         }
@@ -399,6 +396,12 @@ async DoGetPosts()
           console.log("Not related to our contract, skipping."); //TODO: improve this
           continue;
         }
+        var tx = transactions[j]["hash"];
+
+        console.log(["getTransactionReceipt", tx]);
+        //Get transaction receipt
+        var tx2 = await this.web3js.eth.getTransactionReceipt(tx); //TODO: Add error handling here
+        console.log(["tx2", tx2]);
 
         var type = this.fetch_abi_type("post")
         if (type == -1) throw new Error('Error in abi!');
